@@ -13,5 +13,5 @@ pub async fn get_acticles() -> impl Responder {
         link: String::from("aaa"),
         time: String::from("aaa"),
     });
-    HttpResponse::Ok().json(ResponseBody::new("success", list))
+    HttpResponse::Ok().json(ResponseBody::new(200, "success", list))
 }
