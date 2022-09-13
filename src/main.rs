@@ -1,45 +1,24 @@
-mod articles;
+mod config;
+mod handlers;
+mod models;
 mod response;
 
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
-use articles::Article;
-use response::ResponseBody;
-
-#[get("/")]
-async fn hello() -> impl Responder {
-    HttpResponse::Ok().body("Hello, world!")
-}
-
-#[post("/echo")]
-async fn echo(req_body: String) -> impl Responder {
-    HttpResponse::Ok().body(req_body)
-}
-
-#[get("/articles")]
-async fn get_acticles() -> impl Responder {
-    let mut list = Vec::new();
-    list.push(Article {
-        title: String::from("aaa"),
-        link: String::from("aaa"),
-        time: String::from("aaa"),
-    });
-    HttpResponse::Ok().json(ResponseBody::new("success", list))
-}
-
-async fn manual_hello() -> impl Responder {
-    HttpResponse::Ok().body("Hey there!")
-}
+use actix_web::{web, App, HttpServer};
+use handlers::{get_acticles, index};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
+    println!("Starting server at http://localhost:3000/");
+
+    let app = HttpServer::new(|| {
         App::new()
-            .service(hello)
-            .service(get_acticles)
-            .service(echo)
-            .route("/hey", web::get().to(manual_hello))
-    })
-    .bind(("127.0.0.1", 3000))?
+            .route("/", web::get().to(index))
+            .route("/articles", web::get().to(get_acticles))
+    });
+
+
+    app.bind(("0.0.0.0", 3000))?
     .run()
     .await
 }
+
