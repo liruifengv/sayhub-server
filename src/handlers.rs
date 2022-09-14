@@ -1,5 +1,5 @@
 use crate::models::Article;
-use crate::response::Response;
+use crate::response::{BusinessError, Response};
 use actix_web::{HttpResponse, Responder};
 
 pub async fn index() -> impl Responder {
@@ -13,9 +13,15 @@ pub async fn get_acticles() -> impl Responder {
         link: String::from("aaa"),
         time: String::from("aaa"),
     });
-    HttpResponse::Ok().json(Response::ok(list))
+    let res = Response::ok(list);
+    HttpResponse::Ok().json(res)
 }
 
-pub async fn get_error() -> impl Responder {
-    HttpResponse::NotFound().json(Response::err(404, "NotFound"))
+pub async fn get_error() -> Result<HttpResponse, BusinessError> {
+    // 可以这样
+    // HttpResponse::NotFound().json(Response::err(404, "NotFound"))
+    // 也可以调用封装好的业务错误
+    // return Err(BusinessError::InternalError);
+    let field = String::from("testfield");
+    return Err(BusinessError::ValidationError { field: field });
 }
