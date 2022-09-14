@@ -1,11 +1,11 @@
+mod config;
 mod handlers;
 mod models;
-mod config;
 mod response;
 
 use actix_web::{web, App, HttpServer};
 use dotenv::dotenv;
-use handlers::{get_acticles, index};
+use handlers::{get_acticles, get_error, index};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -21,6 +21,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .route("/", web::get().to(index))
             .route("/articles", web::get().to(get_acticles))
+            .route("/error", web::get().to(get_error))
     });
 
     app.bind(format!("{}:{}", config.server.host, config.server.port))?

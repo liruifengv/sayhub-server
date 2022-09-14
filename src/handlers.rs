@@ -1,5 +1,5 @@
 use crate::models::Article;
-use crate::response::ResponseBody;
+use crate::response::Response;
 use actix_web::{HttpResponse, Responder};
 
 pub async fn index() -> impl Responder {
@@ -13,5 +13,9 @@ pub async fn get_acticles() -> impl Responder {
         link: String::from("aaa"),
         time: String::from("aaa"),
     });
-    HttpResponse::Ok().json(ResponseBody::new(200, "success", list))
+    HttpResponse::Ok().json(Response::ok(list))
+}
+
+pub async fn get_error() -> impl Responder {
+    HttpResponse::NotFound().json(Response::err(404, "NotFound"))
 }
