@@ -1,18 +1,28 @@
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ResponseBody<T> {
+pub struct Response<T> {
     pub code: i32,
     pub message: String,
-    pub data: T,
+    pub data: Option<T>,
 }
 
-impl<T> ResponseBody<T> {
-    pub fn new(code: i32, message: &str, data: T) -> ResponseBody<T> {
-        ResponseBody {
-            code,
-            message: message.to_string(),
-            data,
+impl<T> Response<T> {
+    pub fn ok(data: T) -> Response<T> {
+        Response {
+            code: 200,
+            message: "success".to_owned(),
+            data: Some(data),
+        }
+    }
+}
+
+impl Response<()> {
+    pub fn err(error: i32, message: &str) -> Self {
+        Response {
+            code: error,
+            message: message.to_owned(),
+            data: None,
         }
     }
 }
