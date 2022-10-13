@@ -1,6 +1,8 @@
-use crate::models::Article;
+use crate::db;
+use crate::models::{Article, TodoList};
 use crate::response::{BusinessError, Response};
-use actix_web::{HttpResponse, Responder};
+use actix_web::{web, HttpResponse, Responder};
+use sqlx::{query, query_as, PgPool};
 
 pub async fn index() -> impl Responder {
   HttpResponse::Ok().body("Hello, world!")
@@ -23,4 +25,13 @@ pub async fn get_error() -> Result<HttpResponse, BusinessError> {
   // Err(BusinessError::InternalError)
   let field = String::from("testfield");
   Err(BusinessError::ValidationError { field })
+}
+
+pub async fn get_todos(db_pool: web::Data<PgPool>) -> Result<HttpResponse, BusinessError> {
+  let row = query_as!(TodoList, "select * from todo_list")
+    .fetch_all(&**db_pool)
+    .await
+    .unwrap();
+  let res = Response::ok(row);
+  Ok(HttpResponse::Ok().json(res))
 }
