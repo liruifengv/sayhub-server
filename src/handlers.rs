@@ -1,4 +1,3 @@
-use crate::db;
 use crate::models::{Article, TodoList};
 use crate::response::{BusinessError, Response};
 use actix_web::{web, HttpResponse, Responder};
@@ -28,10 +27,10 @@ pub async fn get_error() -> Result<HttpResponse, BusinessError> {
 }
 
 pub async fn get_todos(db_pool: web::Data<PgPool>) -> Result<HttpResponse, BusinessError> {
-  let row = query_as!(TodoList, "select * from todo_list")
+  let data = query_as!(TodoList, "select * from todo_list")
     .fetch_all(&**db_pool)
     .await
     .unwrap();
-  let res = Response::ok(row);
+  let res = Response::ok(data);
   Ok(HttpResponse::Ok().json(res))
 }
