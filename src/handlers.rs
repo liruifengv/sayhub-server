@@ -1,4 +1,4 @@
-use crate::models::{Article, TodoList};
+use crate::models::{Article, TodoItem, TodoList};
 use crate::response::{BusinessError, Response};
 use actix_web::{web, HttpResponse, Responder};
 use sqlx::{query, query_as, PgPool};
@@ -29,8 +29,32 @@ pub async fn get_error() -> Result<HttpResponse, BusinessError> {
 pub async fn get_todos(db_pool: web::Data<PgPool>) -> Result<HttpResponse, BusinessError> {
   let data = query_as!(TodoList, "select * from todo_list")
     .fetch_all(&**db_pool)
-    .await
-    .unwrap();
-  let res = Response::ok(data);
-  Ok(HttpResponse::Ok().json(res))
+    .await;
+
+  match data {
+    Ok(data) => {
+      let res = Response::ok(data);
+      Ok(HttpResponse::Ok().json(res))
+    }
+    Err(_) => Err(BusinessError::InternalError),
+  }
+}
+
+pub async fn get_items(db_pool: web::Data<PgPool>, path: web::Path<(i32,)>) -> Result<HttpResponse, BusinessError> {
+  let list_id = path.0;
+  let data = query_as!(
+    TodoItem,
+    r#"select * from todo_item where list_id = $1 order by id"#,
+    list_id
+  )
+  .fetch_all(&**db_pool)
+  .await;
+
+  match data {
+    Ok(data) => {
+      let res = Response::ok(data);
+      Ok(HttpResponse::Ok().json(res))
+    }
+    Err(_) => Err(BusinessError::InternalError),
+  }
 }
