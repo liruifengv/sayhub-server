@@ -7,3 +7,8 @@
 - `actix_web`
 - `sqlx`
 - `PostgreSql`
+
+## License
+
+sayhub-server is released under the MIT License. See the bundled
+[LICENSE](./LICENSE) file for details.
