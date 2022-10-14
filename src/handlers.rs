@@ -1,4 +1,4 @@
-use crate::models::{Article, TodoItem, TodoList};
+use crate::models::{Article, CreateTodoList, TodoItem, TodoList};
 use crate::response::{BusinessError, Response};
 use actix_web::{web, HttpResponse, Responder};
 use sqlx::{query, query_as, PgPool};
@@ -56,5 +56,29 @@ pub async fn get_items(db_pool: web::Data<PgPool>, path: web::Path<(i32,)>) -> R
       Ok(HttpResponse::Ok().json(res))
     }
     Err(_) => Err(BusinessError::InternalError),
+  }
+}
+
+pub async fn create_todo(
+  db_pool: web::Data<PgPool>,
+  params: web::Json<CreateTodoList>,
+) -> Result<HttpResponse, BusinessError> {
+  let data = query_as!(
+    TodoList,
+    r#"insert into todo_list (title) values ($1) returning id, title"#,
+    &params.title
+  )
+  .fetch_one(&**db_pool)
+  .await;
+
+  match data {
+    Ok(data) => {
+      let res = Response::ok(data);
+      Ok(HttpResponse::Ok().json(res))
+    }
+    Err(_) => {
+      let field = String::from("title");
+      Err(BusinessError::ValidationError { field })
+    }
   }
 }
