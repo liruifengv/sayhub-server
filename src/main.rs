@@ -37,6 +37,7 @@ async fn main() -> std::io::Result<()> {
       .route("/todos", web::get().to(get_todos))
       .route("/todos", web::post().to(create_todo))
       .route("/todos/{list_id}/items", web::get().to(get_items))
+      .route("/todos/{id}", web::put().to(update_todo))
   });
 
   app

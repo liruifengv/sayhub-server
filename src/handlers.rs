@@ -66,7 +66,7 @@ pub async fn create_todo(
   let data = query_as!(
     TodoList,
     r#"insert into todo_list (title) values ($1) returning id, title"#,
-    &params.title
+    &params.title,
   )
   .fetch_one(&**db_pool)
   .await;
@@ -80,5 +80,28 @@ pub async fn create_todo(
       let field = String::from("title");
       Err(BusinessError::ValidationError { field })
     }
+  }
+}
+
+pub async fn update_todo(
+  db_pool: web::Data<PgPool>,
+  params: web::Json<CreateTodoList>,
+  path: web::Path<(i32,)>,
+) -> Result<HttpResponse, BusinessError> {
+  let data = query_as!(
+    TodoList,
+    r#"update todo_list set title = $1 where id = $2 returning id, title"#,
+    &params.title,
+    path.0
+  )
+  .fetch_one(&**db_pool)
+  .await;
+
+  match data {
+    Ok(data) => {
+      let res = Response::ok(data);
+      Ok(HttpResponse::Ok().json(res))
+    }
+    Err(_) => Err(BusinessError::InternalError),
   }
 }
