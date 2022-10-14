@@ -105,3 +105,16 @@ pub async fn update_todo(
     Err(_) => Err(BusinessError::InternalError),
   }
 }
+
+pub async fn delete_todo_items(
+  db_pool: web::Data<PgPool>,
+  path: web::Path<(i32,)>,
+) -> Result<HttpResponse, BusinessError> {
+  query!("delete from todo_item where list_id = $1", path.0)
+    .execute(&**db_pool)
+    .await
+    .unwrap();
+
+  let res = Response::ok("删除成功");
+  Ok(HttpResponse::Ok().json(res))
+}
