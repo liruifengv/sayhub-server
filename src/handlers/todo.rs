@@ -1,30 +1,7 @@
-use crate::models::{Article, CreateTodoList, TodoItem, TodoList};
+use crate::models::todo::{CreateTodoList, TodoItem, TodoList};
 use crate::response::{BusinessError, Response};
-use actix_web::{web, HttpResponse, Responder};
+use actix_web::{web, HttpResponse};
 use sqlx::{query, query_as, PgPool};
-
-pub async fn index() -> impl Responder {
-  HttpResponse::Ok().body("Hello, world!")
-}
-
-pub async fn get_acticles() -> impl Responder {
-  let list = vec![Article {
-    title: String::from("aaa"),
-    link: String::from("aaa"),
-    time: String::from("aaa"),
-  }];
-  let res = Response::ok(list);
-  HttpResponse::Ok().json(res)
-}
-
-pub async fn get_error() -> Result<HttpResponse, BusinessError> {
-  // 可以这样
-  // HttpResponse::NotFound().json(Response::err(404, "NotFound"))
-  // 也可以调用封装好的业务错误
-  // Err(BusinessError::InternalError)
-  let field = String::from("testfield");
-  Err(BusinessError::ValidationError { field })
-}
 
 pub async fn get_todos(db_pool: web::Data<PgPool>) -> Result<HttpResponse, BusinessError> {
   let data = query_as!(TodoList, "select * from todo_list")
@@ -33,7 +10,7 @@ pub async fn get_todos(db_pool: web::Data<PgPool>) -> Result<HttpResponse, Busin
 
   match data {
     Ok(data) => {
-      let res = Response::ok(data);
+      let res = Response::success(data);
       Ok(HttpResponse::Ok().json(res))
     }
     Err(_) => Err(BusinessError::InternalError),
@@ -52,7 +29,7 @@ pub async fn get_items(db_pool: web::Data<PgPool>, path: web::Path<(i32,)>) -> R
 
   match data {
     Ok(data) => {
-      let res = Response::ok(data);
+      let res = Response::success(data);
       Ok(HttpResponse::Ok().json(res))
     }
     Err(_) => Err(BusinessError::InternalError),
@@ -73,7 +50,7 @@ pub async fn create_todo(
 
   match data {
     Ok(data) => {
-      let res = Response::ok(data);
+      let res = Response::success(data);
       Ok(HttpResponse::Ok().json(res))
     }
     Err(_) => {
@@ -99,7 +76,7 @@ pub async fn update_todo(
 
   match data {
     Ok(data) => {
-      let res = Response::ok(data);
+      let res = Response::success(data);
       Ok(HttpResponse::Ok().json(res))
     }
     Err(_) => Err(BusinessError::InternalError),
@@ -115,6 +92,6 @@ pub async fn delete_todo_items(
     .await
     .unwrap();
 
-  let res = Response::ok("删除成功");
+  let res = Response::success("删除成功");
   Ok(HttpResponse::Ok().json(res))
 }
