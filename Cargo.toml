@@ -13,4 +13,4 @@ serde_json = "1.0.85"
 dotenv = "0.15.0"
 config = "0.13.2"
 failure = "0.1.8"
-sqlx = { version = "0.6", features = [ "runtime-actix-native-tls" , "postgres" ] }
+sqlx = { version = "0.6", features = [ "runtime-actix-native-tls" , "postgres", "offline" ] }
