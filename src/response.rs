@@ -10,7 +10,7 @@ pub struct Response<T> {
 }
 
 impl<T> Response<T> {
-  pub fn ok(data: T) -> Response<T> {
+  pub fn success(data: T) -> Response<T> {
     Response {
       code: 200,
       message: "success".to_owned(),

@@ -6,7 +6,8 @@ mod response;
 use actix_web::web::Data;
 use actix_web::{web, App, HttpServer};
 use dotenv::dotenv;
-use handlers::*;
+use handlers::article::*;
+use handlers::todo::*;
 use sqlx::postgres::PgPoolOptions;
 
 #[actix_web::main]
@@ -20,8 +21,6 @@ async fn main() -> std::io::Result<()> {
     .connect("postgres://sayhub:sayhub@127.0.0.1/sayhub")
     .await
     .unwrap();
-
-  println!("pool{:?}", pool);
 
   println!(
     "Starting server at http://{}:{}/",
