@@ -1,7 +1,7 @@
 # sayhub-server
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/liruifengv/sayhub-server/pulls)
 
-> `Rust` 后端服务项目，实现增删查改，JWT 鉴权。
+> `Rust` 后端服务项目，实现增删查改。
 
 ## 技术栈
 - `actix_web`
